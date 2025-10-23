@@ -1,19 +1,23 @@
+//Ahmed Mohamed Abosamra- 2025
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
+// ======= YOUR WIFI CREDENTIALS =======
 const char* apSSID="ESP8266_LED_AP";
 const char* apPASS="AASTTEST";
 
+// ======= LED PIN =======
 #define RED D1
 #define GREEN D2
 bool redon = false;
 bool greenon = false;
 
+// Web server on port 80
 ESP8266WebServer server(80);
 
+// ======= Build the HTML page =======
 String buildPage() {
   String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>ESP8266 LED Control</title>";
-
   html += "<style>";
   html += "body {text-align:center; font-family:Arial; margin:30px; background-color:#f7f7f7;}";
   html += "h2 {color:#333; margin-bottom:20px;}";
@@ -61,7 +65,7 @@ String buildPage() {
   return html;
 }
 
-
+// ======= Route Handlers =======
 void handleRoot(){server.send(200,"text/html",buildPage());}
 
 void handleredon(){redon=true;digitalWrite(RED,HIGH);server.send(200,"text/html",buildPage());}
@@ -77,10 +81,12 @@ pinMode(GREEN,OUTPUT);
 digitalWrite(RED,LOW);
 digitalWrite(GREEN,LOW);
 
+  // Connect to WiFi
 Serial.println("Starting Access Point...");
 WiFi.mode(WIFI_AP);
 WiFi.softAP(apSSID,apPASS);
 
+    // WiFi Info
   IPAddress myIP = WiFi.softAPIP();
   Serial.print("AP started. Connect to WiFi '");
   Serial.print(apSSID);
@@ -89,12 +95,15 @@ WiFi.softAP(apSSID,apPASS);
   Serial.print("'. Then open: http://");
   Serial.println(myIP);
 
+    // Define routes
 server.on("/",handleRoot);
 server.on("/red_on",handleredon);
 server.on("/red_off",handleredoff);
 server.on("/green_on",handlegreenon);
 server.on("/green_off",handlegreenoff);
 Serial.println("Web server started.");
+
+  // Start web server
 server.begin();
 
 }
